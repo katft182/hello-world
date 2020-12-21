@@ -50,6 +50,7 @@ workflows:
       - print_world:
           requires:
             - print_hello
+      - print_output_file
       - save_hello_world_output:
           requires:
             - print_output_file      
