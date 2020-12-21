@@ -11,6 +11,22 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: echo "hello"
+  save_hello_world_output:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - run: echo "hello" > output.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - output.txt
+  print_output_file:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace   
+      - run: cat output.txt       
   print_world:
     docker:
       - image: circleci/node:13.8.0
@@ -34,4 +50,7 @@ workflows:
       - print_world:
           requires:
             - print_hello
+      - save_hello_world_output:
+          requires:
+            - print_output_file      
       - print_name
