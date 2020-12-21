@@ -21,8 +21,9 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - run: 
+          name: "echo an env var"
           command: |
-            echo $NAME 
+            echo $NAME
 workflows:
   # Name the workflow "welcome"
   welcome:
