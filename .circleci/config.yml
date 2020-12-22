@@ -8,7 +8,7 @@ commands:
     description: "Print workflow id"
     steps: 
       - run: echo $CIRCLE_WORKFLOW_ID
-  print:
+  print_value:
     description: simple print param
     parameters:
       value:
@@ -25,7 +25,7 @@ jobs:
   print_hello:
     <<: *defaultDocker
     steps:
-      - print:
+      - print_value:
           value: "hello"
       - print_pipeline_id
   save_hello_world_output:
@@ -45,7 +45,7 @@ jobs:
   print_world:
     <<: *defaultDocker
     steps:
-      - print:
+      - print_value:
           value: "world"
   print_name:
     docker:
