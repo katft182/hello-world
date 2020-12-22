@@ -8,6 +8,14 @@ commands:
     description: "Print workflow id"
     steps: 
       - run: echo $CIRCLE_WORKFLOW_ID
+  print:
+    description: simple print param
+    parameters:
+      value:
+        type: string
+        default: hello
+    steps:
+      - run: echo <<paramaters.print>>
 # Use a package of configuration called an orb.
 orbs:
   # Declare a dependency on the welcome-orb
@@ -17,7 +25,8 @@ jobs:
   print_hello:
     <<: *defaultDocker
     steps:
-      - run: echo "hello"
+      - print:
+          value: "hello"
       - print_pipeline_id
   save_hello_world_output:
     <<: *defaultDocker
@@ -36,7 +45,8 @@ jobs:
   print_world:
     <<: *defaultDocker
     steps:
-      - run: echo "world"
+      - print:
+          value: "world"
   print_name:
     docker:
       - image: cimg/base:2020.01
