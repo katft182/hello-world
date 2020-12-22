@@ -55,6 +55,16 @@ jobs:
           name: "echo an env var"
           command: |
             echo $NAME
+  check_fail:
+    <<: *defaultDocker
+    steps:
+      - run: 
+          name: cause fail
+          command: return 1
+      - run:
+          name: On fail
+          command: echo "There is an error"
+          when: on_fail
 workflows:
   # Name the workflow "welcome"
   welcome:
