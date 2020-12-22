@@ -60,7 +60,7 @@ jobs:
     steps:
       - run: 
           name: cause fail
-          command: return 1
+          command: return 1 #cause error
       - run:
           name: On fail
           command: echo "There is an error"
