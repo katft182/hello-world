@@ -80,3 +80,4 @@ workflows:
           requires:
             - save_hello_world_output      
       - print_name
+      - check_fail
