@@ -4,6 +4,12 @@ defaults: &defaultDocker
   docker:
       - image: circleci/node:13.8.0
 commands:
+  destroy_environment:
+    steps:
+      - run: 
+          name: Destroy environment.
+          command: |
+            aws cloudformation delete-stack --stack-name prod-${$CIRCLE_WORKFLOW_ID}
   print_pipeline_id:
     description: "Print workflow id"
     steps: 
@@ -25,7 +31,12 @@ jobs:
       - checkout
       - run: 
           command: |
-            aws cloudformation deploy --template-file aws/template.yml --stack-name CircleStack
+            aws cloudformation deploy --template-file aws/template.yml --stack-name prod-${$CIRCLE_WORKFLOW_ID}
+      - run:
+          command: |
+            return 1 #simulate error to check tear down
+      - destroy_environment:
+            when: on_fail
   install_application:
     docker:
       - image: python:3.7-alpine3.11
