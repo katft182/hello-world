@@ -80,7 +80,7 @@ jobs:
           command: |
             echo $(cat previous.txt)
             aws s3 rm "s3://$(cat previous.txt)" --recursive
-            aws cloudformation delete-stack --stack-name $(cat previous.txt)
+            aws cloudformation delete-stack --stack-name s3-$(cat previous.txt)
   install_application:
     docker:
       - image: python:3.7-alpine3.11
