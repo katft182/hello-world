@@ -48,6 +48,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+      - run: yum -y install tar gzip
       - run:
           command: |
             aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > previous.txt
