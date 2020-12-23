@@ -8,6 +8,7 @@ commands:
     steps:
       - run: 
           name: Destroy environment.
+          when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name prod-${$CIRCLE_WORKFLOW_ID}
   print_pipeline_id:
@@ -33,8 +34,7 @@ jobs:
           command: |
             aws cloudformation deploy --template-file aws/template.yml --stack-name prod-${$CIRCLE_WORKFLOW_ID}
       - run: return 1 #simulate error to check tear down
-      - destroy_environment:
-          when: on_fail
+      - destroy_environment
   install_application:
     docker:
       - image: python:3.7-alpine3.11
