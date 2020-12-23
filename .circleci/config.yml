@@ -22,6 +22,14 @@ orbs:
   welcome: circleci/welcome-orb@0.4.1
 # Orchestrate or schedule a set of jobs
 jobs:
+  create_infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          command: |
+            aws cloudformation deploy --template-body aws/template.yml --stack-name CircleStack
   print_hello:
     <<: *defaultDocker
     steps:
@@ -55,21 +63,12 @@ jobs:
           name: "echo an env var"
           command: |
             echo $NAME
-  check_fail:
-    <<: *defaultDocker
-    steps:
-      - run: 
-          name: cause fail
-          command: return 1 #cause error
-      - run:
-          name: On fail
-          command: echo "There is an error"
-          when: on_fail
 workflows:
   # Name the workflow "welcome"
   welcome:
     # Run the welcome/run job in its own container
     jobs:
+      - create_infrastructure
       - welcome/run
       - print_hello
       - print_world:
@@ -80,4 +79,3 @@ workflows:
           requires:
             - save_hello_world_output      
       - print_name
-      - check_fail
