@@ -55,7 +55,7 @@ jobs:
             aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > previous.txt
             ls
       - persist_to_workspace:
-          root: ~/
+          root: ~/project/
           paths:
             - previous.txt
   promote_to_production:
@@ -74,7 +74,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - attach_workspace:
-          at: ~/  
+          at: ~/project/  
       - run: 
           command: |
             echo $(cat previous.txt)
