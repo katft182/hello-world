@@ -33,7 +33,7 @@ jobs:
           command: |
             aws cloudformation deploy --template-file aws/template.yml --stack-name prod-${$CIRCLE_WORKFLOW_ID}
       - run: return 1 #simulate error to check tear down
-      - destroy_environment
+      - destroy_environment:
           when: on_fail
   install_application:
     docker:
