@@ -51,7 +51,9 @@ jobs:
       - run: yum -y install tar gzip
       - run:
           command: |
+            pwd
             aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > previous.txt
+            ls
       - persist_to_workspace:
           root: ~/
           paths:
