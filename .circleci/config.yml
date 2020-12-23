@@ -42,6 +42,18 @@ jobs:
           command: |
             cd ansible
             ansible-playbook main-remote.yml -i inventory 
+  smoke_test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run:
+          command: |
+            if curl -s --head "ec2-52-12-199-228.us-west-2.compute.amazonaws.com:3000" 
+            then
+              echo "It worked!"
+            else
+              echo "It failed" return 1
+            fi
   print_hello:
     <<: *defaultDocker
     steps:
@@ -81,13 +93,14 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       #- create_infrastructure
-      - install_application
-      - print_hello
-      - print_world:
-          requires:
-            - print_hello
-      - save_hello_world_output
-      - print_output_file:
-          requires:
-            - save_hello_world_output      
-      - print_name
+      #- install_application
+      - smoke_test
+      #- print_hello
+      #- print_world:
+      #    requires:
+      #      - print_hello
+      #- save_hello_world_output
+      #- print_output_file:
+      #    requires:
+      #      - save_hello_world_output      
+      #- print_name
