@@ -35,9 +35,11 @@ jobs:
           fingerprints: 
             - 71:ec:08:3f:12:d7:12:b1:82:1d:26:c6:6e:8d:3f:85
       - run:
+          name: "install dependencies."
           command: |
-            pip3 install --user ansible      
+            apk add --update ansible # install the dependencies needed for your playbook   
       - run: 
+          name: "Configure server"
           command: |
             ansible-playbook main-remote.yml -i ansible/inventory 
   print_hello:
