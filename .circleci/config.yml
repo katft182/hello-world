@@ -35,6 +35,48 @@ jobs:
             aws cloudformation deploy --template-file aws/template.yml --stack-name prod-${CIRCLE_WORKFLOW_ID}
       - run: return 1 #simulate error to check tear down
       - destroy_environment
+  create_and_deploy_front_end:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          command: |
+            aws cloudformation deploy --template-file aws/bucket.yml --stack-name s3-${CIRCLE_WORKFLOW_ID} --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+      - run: aws s3 sync web s3://"${CIRCLE_WORKFLOW_ID}" --delete #upload files from web and delete any extra in bucket
+  get_last_deployment_id:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run:
+          command: |
+            aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate --output text > previous.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - previous.txt
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run: 
+          command: |
+            aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name production-distro \
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+  clean_up_old_frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - attach_workspace:
+          at: ~/  
+      - run: 
+          command: |
+            echo $(cat previous.txt)
+            aws s3 rm "s3://$(cat previous.txt)" --recursive
+            aws cloudformation delete-stack --stack-name $(cat previous.txt)
   install_application:
     docker:
       - image: python:3.7-alpine3.11
@@ -104,7 +146,17 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - create_infrastructure
+      - get_last_deployment_id  
+      - create_and_deploy_front_end:
+          requires: 
+            - get_last_deployment_id
+      - promote_to_production:
+          requires: 
+            - create_and_deploy_front_end
+      - clean_up_old_frontend:
+          requires:
+            - promote_to_production
+      #- create_infrastructure
       #- install_application
       # smoke_test
       #- print_hello
