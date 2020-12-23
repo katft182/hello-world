@@ -16,10 +16,6 @@ commands:
         default: "hello"
     steps:
       - run: echo <<parameters.value>>
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
 # Orchestrate or schedule a set of jobs
 jobs:
   create_infrastructure:
@@ -30,6 +26,17 @@ jobs:
       - run: 
           command: |
             aws cloudformation deploy --template-file aws/template.yml --stack-name CircleStack
+  install_application:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: 
+            - 71:ec:08:3f:12:d7:12:b1:82:1d:26:c6:6e:8d:3f:85
+      - run: 
+          command: |
+            ansible-playbook main-remote.yml -i ansible/inventory 
   print_hello:
     <<: *defaultDocker
     steps:
@@ -68,8 +75,8 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - create_infrastructure
-      - welcome/run
+      #- create_infrastructure
+      - install_application
       - print_hello
       - print_world:
           requires:
