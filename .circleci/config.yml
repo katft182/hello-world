@@ -29,7 +29,7 @@ jobs:
       - checkout
       - run: 
           command: |
-            aws cloudformation deploy --template-body aws/template.yml --stack-name CircleStack
+            aws cloudformation deploy --template-file aws/template.yml --stack-name CircleStack
   print_hello:
     <<: *defaultDocker
     steps:
