@@ -106,9 +106,9 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      #- create_infrastructure
+      - create_infrastructure
       #- install_application
-      - smoke_test
+      # smoke_test
       #- print_hello
       #- print_world:
       #    requires:
