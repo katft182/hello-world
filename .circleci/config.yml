@@ -40,7 +40,8 @@ jobs:
       - run: 
           name: "Configure server"
           command: |
-            ansible-playbook ansible/main-remote.yml -i ansible/inventory 
+            cd ansible
+            ansible-playbook main-remote.yml -i inventory 
   print_hello:
     <<: *defaultDocker
     steps:
