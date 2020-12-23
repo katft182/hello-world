@@ -46,13 +46,16 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
+      - run: apk add --update curl
       - run:
           command: |
             if curl -s --head "ec2-52-12-199-228.us-west-2.compute.amazonaws.com:3000" 
             then
               echo "It worked!"
+              return 0
             else
-              echo "It failed" return 1
+              echo "It failed" 
+              return 1
             fi
   print_hello:
     <<: *defaultDocker
